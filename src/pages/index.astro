@@ -1,0 +1,181 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { sitios, type Sitio } from "../data/sitios";
+
+const heroImage = "/img/fondo2.jpg";
+const heroAlt = "Paisaje caribeño de Venezuela al atardecer";
+
+/** Stroke path data per tile category (24×24 viewBox, currentColor). */
+const iconosTipo: Record<Sitio["tipo"], string[]> = {
+  playa: [
+    "M12 21V12",
+    "M12 13c-2.6-1-5.6-.4-8 2.2",
+    "M12 13c2.6-1 5.6-.4 8 2.2",
+    "M12 13c-.4-2.7.5-4.9 2.6-6.4",
+  ],
+  tepuy: ["M4 20 9 10l3 5 3.5-7L20 20", "M2 20h20", "M17.5 6.5a1.5 1.5 0 1 0 3 0 1.5 1.5 0 1 0-3 0"],
+  laguna: [
+    "M3 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1",
+    "M3 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1",
+  ],
+  catarata: ["M4 21h16", "M5 21V10h4V7h11", "M7.5 10v11", "M12 7v6", "M14.5 7v4"],
+  isla: [
+    "M5 17a7 7 0 0 1 14 0",
+    "M3 17h18",
+    "M12 17v-5",
+    "M12 12c-1.9-1.1-4.2-.8-5.8 1.2",
+    "M12 12c1.9-1.1 4.2-.8 5.8 1.2",
+    "M12 12c-.2-2 .8-3.7 2.6-4.9",
+  ],
+  parque: ["M12 21v-4", "M12 16.5c-2.8 0-5-2.2-5-5s2.2-5.5 5-5.5 5 2.7 5 5.5-2.2 5-5 5Z"],
+};
+---
+
+<BaseLayout
+  title="Galería"
+  description="Un recorrido por los destinos más asombrosos de Venezuela: playas caribeñas, tepuyes milenarios, lagunas y cataratas. Galería fotográfica realizada como tarea de la materia Cátedra."
+  heroPreload={heroImage}
+>
+  <div class="scroll-progress" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <a class="brand" href="/">
+      <svg class="brand-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3Z" />
+        <circle cx="12" cy="13" r="3" />
+      </svg>
+      Playas de <em>Venezuela</em>
+    </a>
+    <nav class="site-nav" aria-label="Principal">
+      <a href="#galeria">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+          <circle cx="9" cy="9" r="2" />
+          <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+        </svg>
+        Galería
+      </a>
+    </nav>
+  </header>
+
+  <div class="noise" aria-hidden="true"></div>
+
+  <section class="hero">
+    <div class="hero-bg" aria-hidden="true"></div>
+    <div class="hero-content">
+      <p class="hero-eyebrow">Galería fotográfica · Materia Cátedra</p>
+      <h1 class="hero-title">Venezuela, paraíso caribeño</h1>
+      <p class="hero-tagline">
+        Un recorrido fotográfico por las playas, tepuyes, lagunas y cataratas más asombrosos del país.
+      </p>
+    </div>
+    <a class="hero-scroll" href="#galeria" aria-label="Ir a la galería">
+      <span>Explorar</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="m6 9 6 6 6-6" />
+      </svg>
+      <span class="hero-scroll-line" aria-hidden="true"></span>
+    </a>
+  </section>
+
+  <main>
+    <section id="galeria" class="gallery-section">
+      <div class="gallery-heading reveal">
+        <div>
+          <p class="section-eyebrow">Galería</p>
+          <h2 class="section-title">Siete destinos inolvidables</h2>
+        </div>
+        <p class="gallery-count">07 lugares · 100&nbsp;% Venezuela</p>
+      </div>
+
+      <p class="gallery-hint reveal">
+        Haz clic en cualquier imagen para conocer su historia.
+      </p>
+
+      <div class="gallery">
+        {
+          sitios.map((sitio, i) => (
+            <button
+              class="tile reveal"
+              type="button"
+              data-index={i}
+              style={`--cols: ${sitio.cols}; --rows: ${sitio.rows}; --d: ${i * 70}ms`}
+              aria-label={`Ver detalles de ${sitio.title}`}
+            >
+              <img
+                src={sitio.image}
+                alt={`Fotografía de ${sitio.title}`}
+                width={sitio.width}
+                height={sitio.height}
+                loading="lazy"
+                decoding="async"
+              />
+              <span class="tile-overlay" aria-hidden="true"></span>
+              <span class="tile-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  {iconosTipo[sitio.tipo].map((d) => <path d={d} />)}
+                </svg>
+              </span>
+              <span class="tile-title">
+                <span class="tile-num">{String(i + 1).padStart(2, "0")}</span>
+                {sitio.title}
+              </span>
+            </button>
+          ))
+        }
+      </div>
+    </section>
+  </main>
+
+  <dialog id="lightbox" class="lightbox" aria-labelledby="lightbox-title">
+    <div class="lightbox-stage">
+      <button type="button" class="lightbox-btn lightbox-close" data-action="close" aria-label="Cerrar">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path d="M18 6 6 18M6 6l12 12" />
+        </svg>
+      </button>
+
+      <button type="button" class="lightbox-btn lightbox-prev" data-action="prev" aria-label="Anterior">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m15 18-6-6 6-6" />
+        </svg>
+      </button>
+
+      <figure class="lightbox-figure">
+        <img id="lightbox-img" src="" alt="" width="0" height="0" />
+        <figcaption class="lightbox-caption">
+          <p class="lightbox-count" id="lightbox-count"></p>
+          <h2 class="lightbox-title" id="lightbox-title"></h2>
+          <p class="lightbox-desc" id="lightbox-desc"></p>
+        </figcaption>
+      </figure>
+
+      <button type="button" class="lightbox-btn lightbox-next" data-action="next" aria-label="Siguiente">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m9 18 6-6-6-6" />
+        </svg>
+      </button>
+    </div>
+  </dialog>
+
+  <footer class="site-footer">
+    <p class="credit">
+      <svg class="footer-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3Z" />
+        <circle cx="12" cy="13" r="3" />
+      </svg>
+      Armando Rojas · 2017–2026
+    </p>
+    <p class="footer-line">
+      <svg class="footer-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+        <circle cx="12" cy="10" r="3" />
+      </svg>
+      Tarea de la materia Cátedra · Galería fotográfica de Venezuela
+    </p>
+  </footer>
+
+  <script>
+    import "../scripts/gallery";
+  </script>
+</BaseLayout>

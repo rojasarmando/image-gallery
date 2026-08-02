@@ -1,0 +1,1062 @@
+/* ============================================================
+   Venezuela Gallery — Playas de Venezuela
+   Dark cinematic travel-photography theme.
+   Semantic HTML + hand-crafted CSS. No framework, no carousel.
+   ============================================================ */
+
+/* ---------- Design tokens ---------- */
+:root {
+  --bg: #060d0b;
+  --bg-soft: #0b1512;
+  --surface: rgba(255, 255, 255, 0.04);
+  --surface-strong: #13211c;
+  --text: #eef6f3;
+  --text-muted: #9db5ad;
+  --accent: #2dd4bf;
+  --accent-soft: rgba(45, 212, 191, 0.14);
+  --amber: #e7b54a;
+  --border: rgba(255, 255, 255, 0.09);
+  --accent-grad: linear-gradient(120deg, #5eead4 0%, #2dd4bf 45%, #67e8f9 100%);
+  --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --radius: 16px;
+  --maxw: 1200px;
+  --gap: 14px;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --header-h: 68px;
+  --header-h-scrolled: 56px;
+}
+
+/* ---------- Reset / base ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+/* Display type: optical sizing + refined kerning/ligatures for Fraunces. */
+.brand,
+.hero-title,
+.section-title,
+.lightbox-title {
+  font-optical-sizing: auto;
+  font-feature-settings: "liga" 1, "kern" 1;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+::selection {
+  background: var(--accent);
+  color: #04201b;
+}
+
+body.is-locked,
+html:has(dialog[open]) {
+  overflow: hidden;
+}
+
+/* ---------- Filmic grain overlay ---------- */
+/* Fixed SVG feTurbulence noise over everything: kills gradient banding,
+   adds a subtle filmic texture. Never blocks interaction. */
+.noise {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+}
+
+/* ---------- Scroll progress bar ---------- */
+/* Thin accent-gradient bar at the very top; width is driven by JS
+   (transform: scaleX(...)) and is still functional under reduced motion. */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: 100;
+  pointer-events: none;
+  transform: scaleX(0);
+  transform-origin: left;
+  background: var(--accent-grad);
+  box-shadow: 0 0 12px rgba(45, 212, 191, 0.45);
+}
+
+/* ---------- Fixed header ---------- */
+.site-header {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 50;
+  height: var(--header-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0 clamp(1.25rem, 4vw, 2.5rem);
+  border-bottom: 1px solid transparent;
+  animation: header-in 0.8s var(--ease) both;
+  transition:
+    background-color 0.4s,
+    border-color 0.4s,
+    backdrop-filter 0.4s,
+    height 0.4s var(--ease);
+}
+
+/* Gradient hairline on the header bottom edge (fades in when scrolled). */
+.site-header::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.14) 22%,
+    rgba(255, 255, 255, 0.14) 78%,
+    transparent 100%
+  );
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+
+@keyframes header-in {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.site-header.is-scrolled {
+  height: var(--header-h-scrolled);
+  background: rgba(6, 13, 11, 0.6);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border-bottom-color: transparent;
+}
+
+.site-header.is-scrolled::after {
+  opacity: 1;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-display);
+  font-size: 1.06rem;
+  letter-spacing: 0.02em;
+  color: var(--text);
+}
+
+.brand-icon {
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.brand em {
+  font-style: italic;
+  color: var(--accent);
+}
+
+.site-nav a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: color 0.3s;
+}
+
+.site-nav a:hover {
+  color: var(--text);
+}
+
+/* ---------- Hero ---------- */
+.hero {
+  position: relative;
+  isolation: isolate;
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: calc(var(--header-h) + 2.5rem) 1.25rem 5.5rem;
+  background: var(--bg);
+}
+
+/* Ken Burns background layer — slow cinematic zoom behind the hero content.
+   The parent receives the JS parallax translate; the ::before carries the
+   image and the slow zoom, so the two transforms never fight. */
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  /* transform: translate3d(0, Y, 0) driven by initParallax() in gallery.ts */
+}
+
+.hero-bg::before {
+  content: "";
+  position: absolute;
+  inset: -12%;
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(4, 10, 8, 0.66) 0%,
+      rgba(4, 10, 8, 0.22) 45%,
+      rgba(6, 13, 11, 0.92) 100%
+    ),
+    url("/img/fondo2.jpg") center / cover no-repeat;
+  transform-origin: center;
+  animation: hero-kenburns 22s var(--ease) infinite alternate;
+}
+
+@keyframes hero-kenburns {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.08);
+  }
+}
+
+/* Ambient accent glow drifting behind the hero content. */
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at 50% 38%,
+    var(--accent-soft),
+    transparent 62%
+  );
+  animation: hero-glow 16s var(--ease) infinite alternate;
+}
+
+@keyframes hero-glow {
+  from {
+    transform: translateY(2.5%);
+  }
+  to {
+    transform: translateY(-2.5%);
+  }
+}
+
+.hero-eyebrow {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  margin: 0 0 1.5rem;
+  padding: 0.55rem 1.1rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* Decorative accent dot inside the eyebrow pill (no new text). */
+.hero-eyebrow::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 10px rgba(45, 212, 191, 0.8);
+  animation: dot-pulse 2.8s var(--ease) infinite;
+}
+
+@keyframes dot-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+.hero-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(2.6rem, 7.5vw, 5.6rem);
+  line-height: 1.05;
+  letter-spacing: -0.022em;
+  text-wrap: balance;
+}
+
+/* Gradient title: solid fallback first, clipped gradient where supported. */
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .hero-title {
+    background: var(--accent-grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}
+
+.hero-tagline {
+  margin: 1.5rem auto 0;
+  max-width: 36rem;
+  color: var(--text-muted);
+  font-size: clamp(1rem, 2.2vw, 1.2rem);
+  line-height: 1.68;
+}
+
+.hero-scroll {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  translate: -50% 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--text-muted);
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  transition: color 0.3s;
+}
+
+.hero-scroll:hover {
+  color: var(--accent);
+}
+
+/* Gentle bounce on the chevron, complements the line sweep below. */
+.hero-scroll svg {
+  animation: chevron-nudge 2.2s var(--ease) infinite;
+}
+
+@keyframes chevron-nudge {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.9;
+  }
+  50% {
+    transform: translateY(4px);
+    opacity: 1;
+  }
+}
+
+.hero-scroll-line {
+  width: 1px;
+  height: 56px;
+  background: linear-gradient(to bottom, var(--accent), transparent);
+  overflow: hidden;
+}
+
+.hero-scroll-line::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, transparent, var(--text));
+  animation: scroll-hint 2.2s var(--ease) infinite;
+}
+
+@keyframes scroll-hint {
+  0% {
+    transform: translateY(-100%);
+  }
+  55%,
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+/* ---------- Hero entrance (on load, staggered) ---------- */
+.hero-eyebrow,
+.hero-title,
+.hero-tagline,
+.hero-scroll {
+  animation: hero-enter 1s var(--ease) both;
+}
+
+.hero-eyebrow {
+  animation-delay: 0.05s;
+}
+
+.hero-title {
+  animation-delay: 0.18s;
+}
+
+.hero-tagline {
+  animation-delay: 0.34s;
+}
+
+.hero-scroll {
+  animation-delay: 0.55s;
+}
+
+@keyframes hero-enter {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+
+/* ---------- Gallery section ---------- */
+.gallery-section {
+  max-width: var(--maxw);
+  margin-inline: auto;
+  padding: clamp(4.5rem, 10vw, 7.5rem) 1.25rem;
+}
+
+.gallery-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 2.75rem;
+}
+
+.section-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin: 0 0 0.75rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+/* Decorative accent dot + trailing hairline (no new text). */
+.section-eyebrow::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 12px rgba(45, 212, 191, 0.7);
+}
+
+.section-eyebrow::after {
+  content: "";
+  width: 2.5rem;
+  height: 1px;
+  background: linear-gradient(90deg, var(--accent), transparent);
+}
+
+.section-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(1.9rem, 4.5vw, 3rem);
+  line-height: 1.1;
+  text-wrap: balance;
+}
+
+.gallery-count {
+  margin: 0;
+  font-size: 0.78rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.gallery-hint {
+  margin: 0 0 2.5rem;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+/* ---------- Gallery grid ---------- */
+.gallery {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--gap);
+}
+
+.tile {
+  position: relative;
+  isolation: isolate;
+  display: block;
+  overflow: hidden;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-strong);
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  contain: layout paint;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 18px 40px rgba(0, 0, 0, 0.35);
+}
+
+/* Reveal stagger keeps its per-tile delay; hover-affecting properties
+   (border/shadow) transition instantly, without inheriting the stagger. */
+.gallery .tile {
+  transition:
+    opacity 0.8s var(--ease),
+    transform 0.8s var(--ease),
+    border-color 0.35s var(--ease),
+    box-shadow 0.45s var(--ease);
+  transition-delay: var(--d, 0ms), var(--d, 0ms), 0ms, 0ms;
+}
+
+/* Sheen sweep that glints across the tile on hover (decorative only). */
+.tile::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(
+    115deg,
+    transparent 32%,
+    rgba(255, 255, 255, 0.16) 46%,
+    rgba(255, 255, 255, 0.05) 58%,
+    transparent 72%
+  );
+  transform: translateX(-130%);
+  transition: transform 1.4s var(--ease);
+}
+
+.gallery .tile:hover::before {
+  transform: translateX(130%);
+  transition-duration: 0.65s;
+}
+
+.tile img {
+  display: block;
+  width: 100%;
+  height: auto;
+  transition:
+    transform 0.9s var(--ease),
+    filter 0.6s var(--ease);
+}
+
+.tile:hover img,
+.tile:focus-visible img {
+  transform: scale(1.07);
+  filter: brightness(1.08);
+}
+
+.tile:hover {
+  border-color: rgba(45, 212, 191, 0.4);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 26px 60px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(45, 212, 191, 0.12);
+}
+
+.tile-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    to top,
+    rgba(4, 10, 8, 0.88) 0%,
+    rgba(4, 10, 8, 0.18) 45%,
+    transparent 72%
+  );
+  opacity: 0.92;
+  transition: opacity 0.5s;
+}
+
+.tile:hover .tile-overlay {
+  opacity: 1;
+}
+
+.tile-title {
+  position: absolute;
+  z-index: 2;
+  left: 1.15rem;
+  right: 1.15rem;
+  bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(1.15rem, 2.4vw, 1.5rem);
+  line-height: 1.18;
+  letter-spacing: -0.01em;
+  transform: translateY(6px);
+  transition: transform 0.5s var(--ease);
+}
+
+.tile:hover .tile-title,
+.tile:focus-visible .tile-title {
+  transform: none;
+}
+
+.tile-num {
+  font-family: var(--font-body);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.gallery .tile:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-color: rgba(45, 212, 191, 0.5);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 0 0 8px rgba(45, 212, 191, 0.16),
+    0 18px 40px rgba(0, 0, 0, 0.35);
+}
+
+/* Category icon chip, top-right of each tile (decorative, non-blocking). */
+.tile-icon {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border);
+  color: var(--text);
+  pointer-events: none;
+}
+
+/* Tablet: 2 columns, uniform tile height */
+@media (min-width: 640px) {
+  .gallery {
+    grid-template-columns: repeat(2, 1fr);
+    grid-auto-rows: 6px;
+  }
+
+  .tile {
+    grid-column: auto;
+    grid-row: span 24;
+  }
+
+  .tile img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+/* Desktop: asymmetric 12-column masonry with per-item spans */
+@media (min-width: 1024px) {
+  .gallery {
+    grid-template-columns: repeat(12, 1fr);
+  }
+
+  .tile {
+    grid-column: span var(--cols);
+    grid-row: span var(--rows);
+  }
+}
+
+/* ---------- Lightbox ---------- */
+.lightbox {
+  width: min(960px, calc(100vw - 2rem));
+  max-width: none;
+  max-height: 92svh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+}
+
+.lightbox::backdrop {
+  background: rgba(3, 8, 6, 0.88);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+
+/* Progressive enhancement: fade the backdrop in/out where supported. */
+@supports (transition-behavior: allow-discrete) {
+  .lightbox::backdrop {
+    transition:
+      background-color 0.4s allow-discrete,
+      backdrop-filter 0.4s;
+  }
+
+  .lightbox.closing::backdrop {
+    background-color: rgba(3, 8, 6, 0);
+  }
+}
+
+@supports (transition-behavior: allow-discrete) {
+  @starting-style {
+    .lightbox[open]::backdrop {
+      background-color: rgba(3, 8, 6, 0);
+    }
+  }
+}
+
+.lightbox[open] {
+  animation: lightbox-in 0.4s var(--ease);
+}
+
+/* Close state: toggled by JS before dialog.close() (see gallery.ts).
+   Falls back to an instant close if JS never adds the class. */
+.lightbox.closing {
+  animation: lightbox-out 0.22s var(--ease) forwards;
+  pointer-events: none;
+}
+
+@keyframes lightbox-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+    filter: blur(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+
+@keyframes lightbox-out {
+  from {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.97);
+    filter: blur(6px);
+  }
+}
+
+.lightbox-stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+
+.lightbox-figure {
+  margin: 0;
+  display: grid;
+  justify-items: center;
+  gap: 1.25rem;
+  padding: 0 clamp(1rem, 6vw, 4.5rem);
+}
+
+.lightbox-figure img {
+  width: auto;
+  max-width: 100%;
+  max-height: 58svh;
+  object-fit: contain;
+  border-radius: var(--radius);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+  box-shadow:
+    0 30px 90px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+.lightbox-caption {
+  text-align: center;
+  max-width: 62ch;
+}
+
+.lightbox-count {
+  margin: 0 0 0.5rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.lightbox-title {
+  margin: 0 0 0.75rem;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(1.4rem, 4vw, 2.1rem);
+  line-height: 1.15;
+}
+
+.lightbox-desc {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+.lightbox-btn {
+  position: absolute;
+  top: 50%;
+  translate: 0 -50%;
+  z-index: 3;
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--text);
+  cursor: pointer;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  box-shadow:
+    0 8px 28px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transition:
+    background-color 0.3s,
+    color 0.3s,
+    border-color 0.3s,
+    transform 0.35s var(--ease);
+}
+
+.lightbox-btn:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(45, 212, 191, 0.45);
+  color: var(--accent);
+}
+
+/* Directional affordance: prev nudges left, next nudges right. */
+.lightbox-prev:hover {
+  transform: scale(1.08) translateX(-3px);
+}
+
+.lightbox-next:hover {
+  transform: scale(1.08) translateX(3px);
+}
+
+.lightbox-close:hover {
+  transform: scale(1.08);
+}
+
+.lightbox-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.lightbox-prev {
+  left: 0.75rem;
+}
+
+.lightbox-next {
+  right: 0.75rem;
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  translate: none;
+}
+
+/* Slightly smaller controls on small screens, always inside the dialog. */
+@media (max-width: 479px) {
+  .lightbox-btn {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+/* ---------- Footer ---------- */
+.site-footer {
+  position: relative;
+  padding: 3.5rem 1.25rem;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  background: radial-gradient(
+    ellipse 80% 100% at 50% 0%,
+    var(--bg-soft),
+    transparent 72%
+  );
+}
+
+/* Gradient hairline that fades out at both ends. */
+.site-footer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  translate: -50% 0;
+  width: min(100%, 900px);
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--border) 30%,
+    var(--border) 70%,
+    transparent 100%
+  );
+}
+
+.site-footer p {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 0.45rem 0;
+  letter-spacing: 0.04em;
+}
+
+.footer-icon {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.site-footer .credit {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  color: var(--text);
+}
+
+/* ---------- Scroll reveal ---------- */
+.reveal {
+  opacity: 0;
+  transform: translateY(26px);
+  transition:
+    opacity 0.8s var(--ease),
+    transform 0.8s var(--ease);
+  transition-delay: var(--d, 0ms);
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Hero entrance: show elements immediately, no stagger delays. */
+  .hero-eyebrow,
+  .hero-title,
+  .hero-tagline,
+  .hero-scroll {
+    animation: none !important;
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Ken Burns and ambient glow: static background, no movement. */
+  .hero-bg,
+  .hero-bg::before,
+  .hero::after {
+    animation: none !important;
+    transform: none !important;
+  }
+
+  /* Header: visible immediately. */
+  .site-header {
+    animation: none !important;
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Scroll progress: still functional (JS-driven), no smoothing needed. */
+  .scroll-progress {
+    transition: none;
+  }
+
+  /* Hero eyebrow dot and chevron: static, no pulse/bounce. */
+  .hero-eyebrow::before,
+  .hero-scroll svg {
+    animation: none !important;
+  }
+
+  /* Tile sheen sweep: removed entirely. */
+  .tile::before {
+    display: none;
+  }
+
+  /* Lightbox close animation: instant. */
+  .lightbox.closing {
+    animation: none;
+  }
+}
