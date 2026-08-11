@@ -1,42 +1,46 @@
-# Playas de Venezuela — Galería
+# Beaches of Venezuela — Gallery
 
-Galería fotográfica de sitios turísticos de Venezuela, migrada a un sitio estático moderno con **Astro**.
+Photographic gallery of Venezuelan tourist sites, migrated to a modern static site with **Astro**.
 
-Originalmente un proyecto PHP + Bootstrap 3 (2017, Cátedra Bolivariana), reconstruido en 2026 con una estética cinematográfica oscura: galería asimétrica, lightbox nativo con teclado, animaciones de scroll suaves y cero frameworks más allá de Astro.
+Originally a PHP + Bootstrap 3 project (2017, Cátedra Bolivariana), rebuilt in 2026 with a dark cinematic aesthetic: asymmetric gallery, native lightbox with keyboard support, smooth scroll animations, and zero frameworks beyond Astro.
 
 ## Stack
 
-- **Astro 5** (estático, sin integraciones)
-- CSS moderno a mano (custom properties, grid, `aspect-ratio`, `backdrop-filter`)
-- TypeScript vanilla para el lightbox y las animaciones
-- `<dialog>` nativo para el lightbox (prev/next, Esc, flechas, bloqueo de scroll)
+- **Astro 5** (static, no integrations)
+- Hand-written modern CSS (custom properties, grid, `aspect-ratio`, `backdrop-filter`)
+- Vanilla TypeScript for the lightbox and animations
+- Native `<dialog>` for the lightbox (prev/next, Esc, arrows, scroll lock)
 
-## Contenido
+## Content
 
-7 sitios venezolanos con título, imagen y reseña en español, definidos en `src/data/sitios.ts` — una sola fuente de verdad para todo el sitio.
+7 Venezuelan sites with title, image, and review in Spanish, defined in `src/data/sitios.ts` — a single source of truth for the whole site.
 
-## Comandos
+## Commands
 
 ```bash
-npm install     # instalar dependencias
-npm run dev     # servidor de desarrollo (http://localhost:4321)
-npm run build   # build estático en dist/
-npm run preview # previsualizar el build
+npm install     # install dependencies
+npm run dev     # development server (http://localhost:4321)
+npm run build   # static build to dist/
+npm run preview # preview the build
 ```
 
-## Estructura
+## Structure
 
 ```
 src/
-  data/sitios.ts        # contenido de la galería (editar aquí)
+  data/sitios.ts        # gallery content (edit here)
   layouts/BaseLayout.astro
-  pages/index.astro     # hero + galería + lightbox + footer
-  scripts/gallery.ts    # lightbox, scroll reveal, estado del header
-  styles/global.css     # tema completo
+  pages/index.astro     # hero + gallery + lightbox + footer
+  scripts/gallery.ts    # lightbox, scroll reveal, header state
+  styles/global.css     # full theme
 public/
-  img/                  # imágenes de la galería
+  img/                  # gallery images
 ```
 
-## Créditos
+## Credits
 
 Armando José Rojas Querales — 2017 · 2026
+
+---
+
+**Other languages:** [Español](docs/README.es.md) · [Français](docs/README.fr.md) · [Português](docs/README.pt.md) · [中文](docs/README.zh.md)
